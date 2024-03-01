@@ -98,6 +98,18 @@ plt.title(f'Max Depth vs R2 Score \nBest Max Depth: {best_max_depth} \nBest R2 S
 plt.tight_layout()
 plt.show()
 
+## while the max depth of 8 gives the best r-squared, the score is farily flat starting at max depth of 4
+# use max depth of 4
+model = DecisionTreeRegressor(max_depth=4, random_state=42)
+model.fit(X_train, y_train)
+y_pred = model.predict(X_test)
+r2 = r2_score(y_test, y_pred)
+print(f'R2 score: {r2}') # performance barely changes with less chance of overfitting
+
+# plot the model
+plt.figure(figsize=(20, 10))
+plot_tree(model, filled=True, rounded=True, feature_names=X_train.columns, fontsize=16)
+
 
 # save the model
 with open('./models/decision_tree_regression_loyalty.pkl', 'wb') as f:
