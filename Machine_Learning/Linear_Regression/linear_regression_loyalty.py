@@ -98,3 +98,17 @@ def adjusted_r2_score(r2, n, p):
 
 print(f'Adjusted R2 score: {adjusted_r2_score(r2, n, p)}')
 
+# view the coefficients
+coefs = pd.DataFrame({'variable': X_train.columns, 'coef': model.coef_})
+coefs = coefs.sort_values(by='coef', ascending=False)
+
+# plot the coefficients
+plt.barh(coefs['variable'], coefs['coef'])
+plt.xlabel('Coefficient')
+plt.ylabel('Variable')
+plt.title('Coefficients of the Linear Regression Model')
+plt.show()
+
+# save the model
+with open('./models/linear_regression_loyalty.pkl', 'wb') as f:
+    pickle.dump(model, f)
