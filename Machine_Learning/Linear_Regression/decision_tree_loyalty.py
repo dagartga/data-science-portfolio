@@ -2,12 +2,11 @@ import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
 
-from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor, plot_tree
 from sklearn.utils import shuffle  
 from sklearn.model_selection import train_test_split, cross_val_score, KFold
 from sklearn.metrics import r2_score
 from sklearn.preprocessing import OneHotEncoder
-from sklearn.feature_selection import RFECV
 
 
 # load the data for modeling
@@ -24,20 +23,6 @@ df_with_loyalty = shuffle(df_with_loyalty, random_state=42)
 # drop missing values since only a few are present
 df_with_loyalty = df_with_loyalty.dropna()
 
-
-# create function to remove outliers based on 2.0 IQR
-def remove_outliers(df, column):
-    q1 = df[column].quantile(0.25)
-    q3 = df[column].quantile(0.75)
-    iqr = q3 - q1
-    lower_bound = q1 - 2.0 * iqr
-    upper_bound = q3 + 2.0 * iqr
-    df = df[(df[column] > lower_bound) & (df[column] < upper_bound)]
-    return df
-
-# drop oultiers
-for col in ['distance_from_store', 'total_sales', 'total_items']:
-    df_with_loyalty = remove_outliers(df_with_loyalty, col)
 
 # create X and y
 X = df_with_loyalty.drop('customer_loyalty_score', axis=1)
@@ -63,23 +48,9 @@ X_test = pd.concat([X_test.reset_index(drop=True), X_test_encoded.reset_index(dr
 X_test.drop(cat_cols, axis=1, inplace=True)
 
 # create the Linear Regression model
-model = LinearRegression()
-
-# use the feature selection of recurvise feature elimination with cross validation
-rfecv = RFECV(estimator=model)
-fit = rfecv.fit(X_train, y_train)
-
-optimal_feature_count = rfecv.n_features_
-print(f'Total number of features: {X_train.shape[1]}')
-print(f'Optimal number of features: {optimal_feature_count}')
-print(f'Optimal features: {X_train.columns[fit.support_]}')
-
-# create X_train and X_test with the optimal features
-X_train = X_train.iloc[:, fit.support_]
-X_test = X_test.iloc[:, fit.support_]
+model = DecisionTreeRegressor(random_state=42)
 
 # train the model
-model = LinearRegression()
 model.fit(X_train, y_train)
 
 # predict the test set
@@ -104,11 +75,30 @@ def adjusted_r2_score(r2, n, p):
 
 print(f'Adjusted R2 score: {adjusted_r2_score(r2, n, p)}')
 
-# view the coefficients
-coefs = pd.DataFrame({'variable': X_train.columns, 'coef': model.coef_})
-coefs = coefs.sort_values(by='coef', ascending=False)
-print(coefs)
+# find best max depth
+max_depths = range(1, 9)
+r2_scores = []
+for depth in max_depths:
+    model = DecisionTreeRegressor(max_depth=depth, random_state=42)
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    r2 = r2_score(y_test, y_pred)
+    r2_scores.append(r2)
+    
+# find the best max depth
+best_r2_score = max(r2_scores) 
+best_max_depth = max_depths[r2_scores.index(best_r2_score)]   
+    
+# plot the max depth vs r2 score
+plt.plot(max_depths, r2_scores)
+plt.scatter(best_max_depth, best_r2_score, color='red', marker='x', label='Best Max Depth')
+plt.xlabel('Max Depth')
+plt.ylabel('R2 Score')
+plt.title(f'Max Depth vs R2 Score \nBest Max Depth: {best_max_depth} \nBest R2 Score: {round(best_r2_score, 3)}')
+plt.tight_layout()
+plt.show()
+
 
 # save the model
-with open('./models/linear_regression_loyalty.pkl', 'wb') as f:
+with open('./models/decision_tree_regression_loyalty.pkl', 'wb') as f:
     pickle.dump(model, f)
