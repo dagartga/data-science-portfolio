@@ -7,7 +7,7 @@ from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split, cross_val_score, KFold
 from sklearn.metrics import r2_score
 from sklearn.preprocessing import OneHotEncoder
-
+from sklearn.inspection import permutation_importance
 
 # load the data for modeling
 with open('./data/df_with_loyalty.pkl', 'rb') as f:
@@ -133,6 +133,16 @@ plt.barh(feature_importance_df['feature'], feature_importance_df['importance'])
 plt.xlabel('Importance')
 plt.ylabel('Feature')
 plt.title('Feature Importance - Random Forest Regression')
+plt.tight_layout()
+plt.show()
+
+# view the permutation importance
+perm_importance = permutation_importance(model, X_test, y_test, random_state=42)
+sorted_idx = perm_importance.importances_mean.argsort()
+plt.barh(X_test.columns[sorted_idx], perm_importance.importances_mean[sorted_idx])
+plt.xlabel('Permutation Importance')
+plt.ylabel('Feature')
+plt.title('Permutation Importance - Random Forest Regression')
 plt.tight_layout()
 plt.show()
 
