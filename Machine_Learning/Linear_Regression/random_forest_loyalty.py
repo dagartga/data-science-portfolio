@@ -149,3 +149,7 @@ plt.show()
 # save the model
 with open('./models/random_forest_regression_loyalty.pkl', 'wb') as f:
     pickle.dump(model, f)
+    
+# save the one hot encoder
+with open('./models/one_hot_encoder_loyalty.pkl', 'wb') as f:
+    pickle.dump(one_hot, f)
