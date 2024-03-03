@@ -1,6 +1,7 @@
 import pandas as pd
 import pickle
 import matplotlib.pyplot as plt
+import numpy as np
 
 from sklearn.linear_model import LinearRegression
 from sklearn.utils import shuffle  
@@ -63,7 +64,7 @@ X_test = pd.concat([X_test.reset_index(drop=True), X_test_encoded.reset_index(dr
 X_test.drop(cat_cols, axis=1, inplace=True)
 
 # create the Linear Regression model
-model = LinearRegression()
+model = LinearRegression(random_state=42)
 
 # use the feature selection of recurvise feature elimination with cross validation
 rfecv = RFECV(estimator=model)
@@ -73,6 +74,19 @@ optimal_feature_count = rfecv.n_features_
 print(f'Total number of features: {X_train.shape[1]}')
 print(f'Optimal number of features: {optimal_feature_count}')
 print(f'Optimal features: {X_train.columns[fit.support_]}')
+
+
+# get the mean cross validation score
+grid_scores = [np.mean(vals) for vals in fit.grid_scores_]
+
+
+# plot the feature selection
+plt.plot(range(1, len(fit.grid_scores_) + 1), grid_scores, marker='o')
+plt.ylabel('R2 Score')
+plt.xlabel('Number of Features')
+plt.title(f'Feature Selection using RFE \n Optimal number of features is {optimal_feature_count} (at score of {round(rfecv.grid_scores_.max(), 2)})')
+plt.tight_layout()
+plt.show()
 
 # create X_train and X_test with the optimal features
 X_train = X_train.iloc[:, fit.support_]
