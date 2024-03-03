@@ -165,3 +165,7 @@ plt.ylabel('Assessment Score')
 plt.legend(loc='lower left')
 plt.tight_layout()
 plt.show()
+
+# generate predictions using the best threshold
+y_pred_thresh = (y_pred_prob >= best_thresh).astype(int)
+
