@@ -32,9 +32,10 @@ def remove_outliers(df, column):
     q1 = df[column].quantile(0.25)
     q3 = df[column].quantile(0.75)
     iqr = q3 - q1
-    lower_bound = q1 - 2.0 * iqr
-    upper_bound = q3 + 2.0 * iqr
-    df = df[(df[column] > lower_bound) & (df[column] < upper_bound)]
+    lower_bound = q1 - 2 * iqr
+    upper_bound = q3 + 2 * iqr
+    outliers_df = df[(df[column] < lower_bound) | (df[column] > upper_bound)]
+    df = df.drop(outliers_df.index, axis=0).reset_index(drop=True)
     return df
 
 # drop oultiers
@@ -160,11 +161,3 @@ plt.xlabel('K Value for KNN')
 plt.ylabel('F1 Score')
 plt.tight_layout()
 plt.show()
-
-# plot the decision tree
-plt.figure(figsize=(25, 15))
-tree = plot_tree(model, 
-                 feature_names=X_train.columns, 
-                 filled=True,
-                 rounded=True,
-                 fontsize=16)

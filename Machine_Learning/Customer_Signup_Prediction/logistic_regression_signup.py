@@ -31,9 +31,10 @@ def remove_outliers(df, column):
     q1 = df[column].quantile(0.25)
     q3 = df[column].quantile(0.75)
     iqr = q3 - q1
-    lower_bound = q1 - 2.0 * iqr
-    upper_bound = q3 + 2.0 * iqr
-    df = df[(df[column] > lower_bound) & (df[column] < upper_bound)]
+    lower_bound = q1 - 2 * iqr
+    upper_bound = q3 + 2 * iqr
+    outliers_df = df[(df[column] < lower_bound) | (df[column] > upper_bound)]
+    df = df.drop(outliers_df.index, axis=0).reset_index(drop=True)
     return df
 
 # drop oultiers
