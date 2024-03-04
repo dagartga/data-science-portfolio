@@ -137,40 +137,34 @@ print(f'Recall: {recall}')
 f1 = f1_score(y_test, y_pred)
 print(f'F1: {f1}')
 
-# get the best probability threshold
-thresholds = np.arange(0, 1, 0.01)
+# find the best value for k
+k_list = list(range(2, 25))
+f1_results = []
+for k_val in k_list:
+    model = KNeighborsClassifier(n_neighbors=k_val)
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    f1 = f1_score(y_test, y_pred)
+    f1_results.append(f1)
+    
+max_f1 = max(f1_results)
+best_k_value = k_list[f1_results.index(max_f1)]
+print(f'Best K value: {best_k_value}')
+print(f'Best F1: {max_f1}')
 
-precision_scores = []
-recall_scores = []
-f1_scores = []
-
-for thresh in thresholds:
-    y_pred_thresh = (y_pred_prob > thresh).astype(int)
-    precision = precision_score(y_test, y_pred_thresh, zero_division=0)
-    recall = recall_score(y_test, y_pred_thresh)
-    f1 = f1_score(y_test, y_pred_thresh)
-    precision_scores.append(precision)
-    recall_scores.append(recall)
-    f1_scores.append(f1)
-
-# get the max f1 score
-max_f1 = max(f1_scores)
-max_f1_index = f1_scores.index(max_f1)
-best_thresh = thresholds[max_f1_index]
-print(f'Best Threshold: {best_thresh}')
-
-# plot the tresholds
-plt.style.use('seaborn-poster')
-plt.plot(thresholds, precision_scores, label='Precision', linestyle='--')
-plt.plot(thresholds, recall_scores, label='Recall', linestyle='--')
-plt.plot(thresholds, f1_scores, label='F1', linewidth=5)
-plt.title(f'Finding the Optimal Threshold for Classification Model \n Max F1: {round(max_f1, 2)} (Threshold at {round(best_thresh, 2)})')
-plt.xlabel('Threshold')
-plt.ylabel('Assessment Score')
-plt.legend(loc='lower left')
+# plot the f1 results for K values
+plt.plot(k_list, f1_results)
+plt.scatter(best_k_value, max_f1, color='red', marker='x')
+plt.title(f'F1 Score vs K Value\n Optimal K Value: {best_k_value} (F1: {round(max_f1,2)})')
+plt.xlabel('K Value for KNN')
+plt.ylabel('F1 Score')
 plt.tight_layout()
 plt.show()
 
-# generate predictions using the best threshold
-y_pred_thresh = (y_pred_prob >= best_thresh).astype(int)
-
+# plot the decision tree
+plt.figure(figsize=(25, 15))
+tree = plot_tree(model, 
+                 feature_names=X_train.columns, 
+                 filled=True,
+                 rounded=True,
+                 fontsize=16)
