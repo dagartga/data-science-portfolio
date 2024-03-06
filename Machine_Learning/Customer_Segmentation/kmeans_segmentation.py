@@ -34,3 +34,62 @@ data_for_cluster = df_pivot.div(df_pivot['Total'], axis=0).drop('Total', axis=1)
 scale_norm = MinMaxScaler()
 data_for_cluster_scaled = scale_norm.fit_transform(data_for_cluster)
 data_for_cluster_scaled = pd.DataFrame(data_for_cluster_scaled, columns=data_for_cluster.columns)
+
+# use wcss to find the optimal number of clusters
+wcss = []
+k_list = list(range(1, 11))
+
+for k in k_list:
+    kmeans = KMeans(n_clusters=k, random_state=42)
+    kmeans.fit(data_for_cluster_scaled)
+    wcss.append(kmeans.inertia_)
+    
+# plot the elbow method
+plt.plot(k_list, wcss)
+plt.title('Within Cluster Sum of Squares - K Means')
+plt.xlabel('K Clusters')
+plt.ylabel('WCSS Score')
+plt.tight_layout()
+plt.show()
+
+# instantiate the model and fit using k = 3
+kmeans = KMeans(n_clusters=3, random_state=42)
+kmeans.fit(data_for_cluster_scaled)
+
+# add the cluster labels to the original data
+data_for_cluster['cluster'] = kmeans.labels_
+
+
+# profile the clusters
+cluster_profile = data_for_cluster.groupby('cluster')[['Dairy', 'Fruit', 'Meat', 'Vegetables']].mean().reset_index()   
+
+# view the customer profile for each cluster and category
+plt.bar(cluster_profile[cluster_profile['cluster'] == 0].columns[1:], cluster_profile[cluster_profile['cluster'] == 0].values[0][1:], color='blue', alpha=0.7)
+plt.xlabel('Product Area')
+plt.ylabel('Mean Sales %')
+plt.title('Customer Purchasing Profile - Cluster 0')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+# view the customer profile for each cluster and category
+plt.bar(cluster_profile[cluster_profile['cluster'] == 1].columns[1:], cluster_profile[cluster_profile['cluster'] == 1].values[0][1:], color='blue', alpha=0.7)
+plt.xlabel('Product Area')
+plt.ylabel('Mean Sales %')
+plt.title('Customer Purchasing Profile - Cluster 1')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+# view the customer profile for each cluster and category
+plt.bar(cluster_profile[cluster_profile['cluster'] == 2].columns[1:], cluster_profile[cluster_profile['cluster'] == 2].values[0][1:], color='blue', alpha=0.7)
+plt.xlabel('Product Area')
+plt.ylabel('Mean Sales %')
+plt.title('Customer Purchasing Profile - Cluster 2')
+plt.xticks(rotation=45)
+plt.tight_layout()
+plt.show()
+
+# cluster 0 is the most balanced in terms of product area sales / No dietary restrictions
+# cluster 1 looks to be vegan (no dairy no meat)
+# cluster 2 looks to be vegetarian (no meat)
