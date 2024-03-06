@@ -5,8 +5,8 @@ from sklearn.preprocessing import MinMaxScaler
 import matplotlib.pyplot as plt
 
 # load the data
-transactions = pd.read_excel('../../ABC_Grocery/grocery_database.xlsx', sheet_name='transactions')
-product_areas = pd.read_excel('../../ABC_Grocery/grocery_database.xlsx', sheet_name='product_areas')
+transactions = pd.read_excel('../data/ABC_Grocery_Data/grocery_database.xlsx', sheet_name='transactions')
+product_areas = pd.read_excel('../data/ABC_Grocery_Data/grocery_database.xlsx', sheet_name='product_areas')
 
 # concat the dataframes
 df = pd.merge(transactions, product_areas, how='inner', on='product_area_id')
