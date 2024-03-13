@@ -59,6 +59,9 @@ kmeans.fit(data_for_cluster_scaled)
 # add the cluster labels to the original data
 data_for_cluster['cluster'] = kmeans.labels_
 
+# view cluster sizes
+data_for_cluster["cluster"].value_counts(normalize=True)
+
 
 # profile the clusters
 cluster_profile = data_for_cluster.groupby('cluster')[['Dairy', 'Fruit', 'Meat', 'Vegetables']].mean().reset_index()   
