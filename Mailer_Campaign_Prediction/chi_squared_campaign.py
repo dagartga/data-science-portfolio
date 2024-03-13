@@ -14,7 +14,7 @@ observed_values = pd.crosstab(campaign_data['mailer_type'], campaign_data['signu
 mailer1_rate = observed_values[0, 1] / (observed_values[0, 0] + observed_values[0, 1])
 mailer2_rate = observed_values[1, 1] / (observed_values[1, 0] + observed_values[1, 1])
 
-# hypothesis stated
+# hypothesis stated and acceptance criteria for rejecting the null hypothesis
 null_hypothesis = 'There is no relationship between mailer type and signup rate. They are independent.'
 alternative_hypothesis = 'There is a relationship between mailer type and signup rate. They are not independent.'
 acceptance_criteria = 0.05
