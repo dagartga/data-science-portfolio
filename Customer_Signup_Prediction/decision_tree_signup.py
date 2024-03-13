@@ -24,10 +24,11 @@ df_signup = df_signup.drop('customer_id', axis=1)
 # shuffle the data
 df_signup = shuffle(df_signup, random_state=42)
 
+# view the value counts
+df_signup['signup_flag'].value_counts()
+
 # drop missing values since only a few are present
 df_signup = df_signup.dropna()
-
-
 
 # create X and y
 X = df_signup.drop('signup_flag', axis=1)
@@ -68,7 +69,7 @@ y_pred_prob = model.predict_proba(X_test)[:, 1]
 # create confusion matrix
 conf_matrix = confusion_matrix(y_test, y_pred)
 # plot the confusion matrix
-# plt.style.use('seaborn-poster')
+plt.style.use('seaborn-poster')
 plt.matshow(conf_matrix, cmap='coolwarm', alpha=0.7)
 plt.gca().xaxis.tick_bottom()
 plt.title('Confusion Matrix')
@@ -118,7 +119,7 @@ plt.ylabel('F1 Score')
 plt.tight_layout()
 plt.show()
 
-# plot the decision tree
+# view the decision tree nodes
 plt.figure(figsize=(25, 15))
 tree = plot_tree(model, 
                  feature_names=X_train.columns, 

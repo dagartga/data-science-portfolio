@@ -16,9 +16,6 @@ from sklearn.inspection import permutation_importance
 with open('./data/abc_classification_modeling.pkl', 'rb') as f:
     df_signup = pickle.load(f)
     
-
-    
-    
 # drop the customer_id column
 df_signup = df_signup.drop('customer_id', axis=1)
 
@@ -69,7 +66,7 @@ y_pred_prob = model.predict_proba(X_test)[:, 1]
 # create confusion matrix
 conf_matrix = confusion_matrix(y_test, y_pred)
 # plot the confusion matrix
-# plt.style.use('seaborn-poster')
+plt.style.use('seaborn-poster')
 plt.matshow(conf_matrix, cmap='coolwarm', alpha=0.7)
 plt.gca().xaxis.tick_bottom()
 plt.title('Confusion Matrix')
