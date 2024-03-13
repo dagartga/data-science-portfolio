@@ -25,6 +25,9 @@ df_albums = shuffle(df_albums, random_state=42)
 # drop missing values since only a few are present
 df_albums = df_albums.dropna(how='any')
 
+# analyze the class imbalance
+df_albums['purchased_album'].value_counts()
+
 
 
 # create X and y
@@ -72,6 +75,9 @@ plt.show()
 pca = PCA(n_components=0.75, random_state=42)
 X_train = pca.fit_transform(X_train)
 X_test = pca.transform(X_test)
+
+# view the number of components
+print(pca.n_components_)
 
 # train Random Forest Classifier
 clf = RandomForestClassifier(random_state=42)
