@@ -25,6 +25,9 @@ df_signup = shuffle(df_signup, random_state=42)
 # drop missing values since only a few are present
 df_signup = df_signup.dropna()
 
+# view the value counts for the target variable
+df_signup['signup_flag'].value_counts(normalize=True)
+
 
 # create function to remove outliers based on 2.0 IQR
 def remove_outliers(df, column):
